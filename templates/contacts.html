@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Контакты</title>
+    <link rel="stylesheet" href="{% static 'css/stylesheet.css'%}" type="text/css">
+</head>
+<body class="background-4">
+{% if user.is_authenticated %}
+    <aside> <!-- Боковая панель (сайдбар) -->
+        <nav> <!-- Дополнительное меню страницы -->
+            <ul>
+                <p>Вы вошли под именем {{ user.get_username }}</p>
+                <li><a class="text" href="{% url 'tours' %}">Все туры</a></li>
+                <li> <a class="text" href="/user/{{ user.id }}">Профиль</a></li>
+                <li><a class="text" href="{% url 'logout' %}">Выйти</a></li>
+            </ul>
+        </nav>
+    </aside>
+    {% else %}
+    <aside> <!-- Боковая панель (сайдбар) -->
+        <nav> <!-- Дополнительное меню страницы -->
+            <ul>
+                <p>Вы не авторизованы</p>
+                <li><a class="text" href="{% url 'login' %}">Войти</a></li>
+                <li><a class="text" href="{% url 'tours' %}">Все туры</a></li>
+            </ul>
+        </nav>
+    </aside>
+    {% endif %}
+<h1>Наши контакты</h1>
+<p>+7-999-444-1234</p>
+<p>touristapp@mail.ru</p>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Туры</title>
+    <link rel="stylesheet" href="{% static 'css/stylesheet.css'%}" type="text/css">
+</head>
+<body class="background-4">
+    {% if user.is_authenticated %}
+    <aside> <!-- Боковая панель (сайдбар) -->
+        <nav> <!-- Дополнительное меню страницы -->
+            <ul>
+                <p>Вы вошли под именем {{ user.get_username }}</p>
+                <li> <a class="text" href="user/{{ user.id }}">Профиль</a></li>
+                <li><a class="text" href="{% url 'contacts' %}">Контакты</a></li>
+                <li><a class="text" href="{% url 'logout' %}">Выйти</a></li>
+            </ul>
+        </nav>
+    </aside>
+    {% else %}
+    <aside> <!-- Боковая панель (сайдбар) -->
+        <nav> <!-- Дополнительное меню страницы -->
+            <ul>
+                <p>Вы не авторизованы</p>
+                <li><a class="text" href="{% url 'login' %}">Войти</a></li>
+                <li><a class="text" href="{% url 'contacts' %}">Контакты</a></li>
+            </ul>
+        </nav>
+    </aside>
+    {% endif %}
+    <h1>Доступные туры</h1>
+    <form method="get">
+        <input name="q" type="text" placeholder="Поиск...">
+        <p>Фильтровать по продолжительности (в сутках):</p>
+        <a>от</a>
+        <input name="qmind" type="number" min="0" step="1">
+        <a>до</a>
+        <input name="qmaxd" type="number" min="1" step="1">
+        <p>Фильтровать по цене (в рублях):</p>
+        <a>от</a>
+        <input name="qminp" type="number" min="1" step="0.5">
+        <a>до</a>
+        <input name="qmaxp" type="number" min="1" step="0.5">
+        <br/>
+        <br/>
+        <button class="custom-btn btn-16" type="submit">Применить</button>
+        <button class="custom-btn btn-16"> <a class="text" href="{% url 'tours' %}">Сбросить</a></button>
+    </form>
+    {% for tour in tours %}
+        <h3>{{ tour.name }}</h3>
+        <p>{{ tour.describe }}</p>
+        <p>Маршрут: {{ tour.route }}</p>
+        {% if tour.duration < 24 %}
+        <p>Продолжительность {{ tour.duration }} ч.</p>
+        {% else %}
+        <p>Продолжительность {{ tour.days }} суток</p>
+        {% endif %}
+        <p>Способы передвижения: {{ tour.transport }}</p>
+        <p>Цена за человека: {{ tour.price }} руб.</p>
+        <button class="custom-btn btn-16"> <a class="text" href="tour/{{ tour.id }}">Забронировать</a></button>
+    {% endfor %}
+</body>
+</html>

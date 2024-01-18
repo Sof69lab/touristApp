@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ tour.name }}</title>
+    <link rel="stylesheet" href="{% static 'css/stylesheet.css'%}" type="text/css">
+</head>
+<body class="background-4">
+<form id="reserv" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% if user.is_authenticated %}
+    <aside>
+        <nav>
+            <ul>
+                <p>Вы вошли под именем {{ user.get_username }}</p>
+                <li><a class="text" href="{% url 'tours' %}">Все туры</a></li>
+                <li> <a class="text" href="/user/{{ user.id }}">Профиль</a></li>
+                <li><a class="text" href="{% url 'contacts' %}">Контакты</a></li>
+                <li><a class="text" href="{% url 'logout' %}">Выйти</a></li>
+            </ul>
+        </nav>
+    </aside>
+    <h3>{{ tour.name }}</h3>
+    <h3 id="name" hidden="hidden">{{ tour.id }}</h3>
+    <p>{{ tour.describe }}</p>
+    <img src="{{ MEDIA_URL }}{{ tour.photo.url}}" alt="connect" style="max-height:300px">
+    <p>Маршрут: {{ tour.route }}</p>
+    {% if tour.duration < 24 %}
+    <p>Продолжительность {{ tour.duration }} ч.</p>
+    {% else %}
+    <p>Продолжительность {{ tour.days }} суток</p>
+    {% endif %}
+    <p id="duration" hidden="hidden">{{ tour.duration }}</p>
+    <p id="user" hidden="hidden">{{ user.id }}</p>
+    <p>Способы передвижения: {{ tour.transport }}</p>
+    <p>Цена за человека: {{ tour.price }} руб.</p>
+    <p id="price" hidden="hidden">{{ tour.price }}</p>
+    {{ form.user }}
+    {{ form.name }}
+    {{ form.start_date }}
+    {{ form.end_date }}
+    {{ form.people }}
+    {{ form.cost }}
+    <p>Выберите даты:</p>
+    {% if tour.duration > 24 %}
+        <li id="startDateLabel">Дата начала тура</li>
+        <input id = "startDate" type="date" required="required">
+        <li id="endDateLabel">Дата окончания тура</li>
+        <input id = "endDate" type="date">
+    {% else %}
+        <input id = "tourdate" type="date" required="required">
+    {% endif %}
+    {% for error in form.start_date.errors %}
+    <br/>
+    <a class="alert alert-danger"> {{error}} </a>
+    {% endfor %}
+    <br/>
+    <p>Укажите количество туристов:</p>
+    <input id = "people" type="number" step="1" min="1" required="required">
+    <br/>
+    <p>Итоговая стоимость:</p>
+    <p id="cost"></p>
+    <br/>
+    <button class="custom-btn btn-16" type="submit">Забронировать</button>
+    {% else %}
+    <aside>
+        <nav>
+            <ul>
+                <p>Вы не авторизованы</p>
+                <li><a class="text" href="{% url 'tours' %}">Все туры</a></li>
+                <li><a class="text" href="{% url 'contacts' %}">Контакты</a></li>
+                <li><a class="text" href="{% url 'login' %}">Войти</a></li>
+            </ul>
+        </nav>
+    </aside>
+    <p>Чтобы забронировать тур, авторизируйтесь на сайте</p>
+    <p><a class="text" href="{% url 'registration' %}">Впервые на сайте? Зарегистрируйтесь!</a></p>
+    {% endif %}
+    <script>
+        document.getElementById("id_user").setAttribute('hidden', 'hidden');
+        document.getElementById("id_user").value = document.getElementById("user").innerHTML;
+        document.getElementById("id_name").setAttribute('hidden', 'hidden');
+        document.getElementById("id_name").value = document.getElementById("name").innerHTML;
+        document.getElementById("id_start_date").setAttribute('hidden', 'hidden');
+        document.getElementById("id_end_date").setAttribute('hidden', 'hidden');
+        document.getElementById("id_people").setAttribute('hidden', 'hidden');
+        document.getElementById("id_cost").setAttribute('hidden', 'hidden');
+
+        document.getElementById("id_people").value = document.getElementById("people").value;
+        document.getElementById("id_cost").value = document.getElementById("people").value*parseFloat(document.getElementById("price").innerHTML);
+        document.getElementById("cost").innerHTML = String(document.getElementById("id_cost").value);
+
+        let days = document.getElementById("duration").innerHTML;
+        let re = /,/;
+        days = Number(days.replace(re, "."));
+        if (days > 24) {
+            document.getElementById("startDate").addEventListener('change', selectStart);
+            function selectStart() {
+                document.getElementById("id_start_date").value = this.value;
+                document.getElementById("endDate").value = this.value;
+                document.getElementById("endDate").stepUp(Math.ceil(days/24));
+                document.getElementById("id_end_date").value = document.getElementById("endDate").value;
+            }
+
+            document.getElementById("endDate").addEventListener('change', selectEnd);
+            function selectEnd() {
+                document.getElementById("id_end_date").value = this.value;
+                document.getElementById("startDate").value = this.value;
+                document.getElementById("startDate").stepDown( Math.ceil(days/24));
+                document.getElementById("id_start_date").value = document.getElementById("startDate").value;
+            }
+        } else {
+            Math.ceil(days/24)
+            document.getElementById("tourdate").addEventListener('change', selectDate);
+            function selectDate() {
+                document.getElementById("id_start_date").value = this.value;
+                document.getElementById("id_end_date").value = this.value;
+            }
+        }
+        document.getElementById("people").addEventListener('change', selectPeople);
+        function selectPeople() {
+            document.getElementById("id_people").value = this.value;
+            document.getElementById("cost").innerHTML = String(this.value*parseFloat(document.getElementById("price").innerHTML));
+            document.getElementById("id_cost").value = parseFloat(document.getElementById("cost").innerHTML);
+        }
+    </script>
+</form>
+</body>
+</html>

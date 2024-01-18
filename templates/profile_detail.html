@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Личный кабинет</title>
+    <link rel="stylesheet" href="{% static 'css/stylesheet.css'%}" type="text/css">
+</head>
+<body class="background-4">
+    {% if user.is_authenticated %}
+    <aside> <!-- Боковая панель (сайдбар) -->
+        <nav> <!-- Дополнительное меню страницы -->
+            <ul>
+                <p>Вы вошли под именем {{ user.get_username }}</p>
+                <li><a class="text" href="{% url 'tours' %}">Все туры</a></li>
+                <li> <a class="text" href="{% url 'profile_edit' %}">Редактировать профиль</a></li>
+                <li><a class="text" href="{% url 'contacts' %}">Контакты</a></li>
+                <li><a class="text" href="{% url 'logout' %}">Выйти</a></li>
+            </ul>
+        </nav>
+    </aside>
+    <h2>Забронированные туры:</h2>
+    <pre>{{ reservs }}</pre>
+    <h2>Контактные данные:</h2>
+    <p>{{ user.email }}</p>
+    {% else %}
+    <aside> <!-- Боковая панель (сайдбар) -->
+        <nav> <!-- Дополнительное меню страницы -->
+            <ul>
+                <p>Вы не авторизованы</p>
+                <li><a class="text" href="{% url 'login' %}">Войти</a></li>
+                <li><a class="text" href="{% url 'tours' %}">Все туры</a></li>
+                <li><a class="text" href="{% url 'contacts' %}">Контакты</a></li>
+            </ul>
+        </nav>
+    </aside>
+    {% endif %}
+</body>
+</html>

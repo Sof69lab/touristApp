@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Редактирование профиля</title>
+    <link rel="stylesheet" href="{% static 'css/stylesheet.css'%}" type="text/css">
+</head>
+<body class="background-4">
+    {% if user.is_authenticated %}
+    <aside> <!-- Боковая панель (сайдбар) -->
+        <nav> <!-- Дополнительное меню страницы -->
+            <ul>
+                <p>Вы вошли под именем {{ user.get_username }}</p>
+                <li> <a class="text" href="{{ user.id }}">Профиль</a></li>
+                <li><a class="text" href="{% url 'logout' %}">Выйти</a></li>
+            </ul>
+        </nav>
+    </aside>
+    <form id="profile" method="post">
+        {% csrf_token %}
+        <h3>Имя:</h3>
+        <p>{{ form.username }}</p>
+        {% for error in form.username.errors %}
+            <li> {{error}} </li>
+        {% endfor %}
+        <h3>Электронная почта:</h3>
+        <p>{{ form.email }}</p>
+        {% for error in form.email.errors %}
+            <li> {{error}} </li>
+        {% endfor %}
+        <button class="custom-btn btn-16" type="submit">Сохранить изменения</button>
+    </form>
+    {% else %}
+    <aside> <!-- Боковая панель (сайдбар) -->
+        <nav> <!-- Дополнительное меню страницы -->
+            <ul>
+                <p>Вы не авторизованы</p>
+                <li><a class="text" href="{% url 'login' %}">Войти</a></li>
+            </ul>
+        </nav>
+    </aside>
+    {% endif %}
+</body>
+</html>
